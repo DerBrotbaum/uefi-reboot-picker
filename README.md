@@ -1,47 +1,38 @@
-# Grub Reboot Picker  [![CI](https://github.com/mendhak/grub-reboot-picker/workflows/CI/badge.svg)](https://github.com/mendhak/grub-reboot-picker/actions)
+# UEFI Reboot Picker
+
+The "I'm too cool to use a boot loader" edition of [grub-reboot-picker](https://github.com/mendhak/grub-reboot-picker) using `efibootmgr` instead of Grub. 
 
 This utility is an app indicator (tray icon) to help you reboot into other OSes, or UEFI/BIOS, or the same OS.  
-Instead of picking the OS you want during reboot at the grub menu, you can just preselect it from the menu here.  
-Basically it's a wrapper around `grub-reboot`. I've only tested this on Ubuntu 20.04, 22.04, 24.04. 
+Instead of picking the OS you want during reboot at the UEFI firmware menu, you can just preselect it from the menu here.  
+Basically it's a wrapper around `efibootmgr`. Tested under Arch Linux. 
 
-![screenshot](assets/screenshot.png) 
+![screenshot](assets/001.png) 
 
-## Install it
+## Installing vs just executing the script
 
-apt install:
+You can either install the application or just run the python script (./src/uefi-reboot-picker.py). By using the install script the application gets put into autostart and the included polkit policy allows setting the reboot targets without asking for root privileges. 
 
-```
-sudo add-apt-repository ppa:mendhak/ppa
-sudo apt update
-sudo apt install grub-reboot-picker
-```
-
+* Clone the repo
+  ```
+  git clone https://github.com/DerBrotbaum/uefi-reboot-picker
+  ```
+* Run the install script (as root)
+  ```
+  ./uefi-reboot-picker/install.sh
+  ```
 
 ## Run it
 
-The application will auto start the next time you log in to Ubuntu.  
-You can also launch it directly by searching for `Grub Reboot Picker` in Activities
+The application will auto start the next time you log in.  
+You can also launch it directly by searching for `UEFI Reboot Picker` in Activities
 
 
 ## Use it
 
 Click on the application icon.  
-A menu with grub entries will appear.  
+A menu with UEFI boot entries will appear.  
 Click one of the entries.  
-After a moment, Ubuntu will reboot.  
-The grub menu item you chose should be preselected. 
-
-
-# TODO
-
-Configuration file or Configuration screen: 
-* Top level or double level menu items
-* Nicknames for menu items  
-
-StartupNotify = true might be causing 'wait' cursor to appear
-
-Run a single instance of the application
-
+After a moment, the system will reboot into the selected entry.
 
 
 # Developing locally
@@ -64,58 +55,6 @@ cd src
 sudo ./grub-reboot-picker.py
 ```
 
-Sudo is required here because grub.cfg may not be readable (0600 permission)
-
-## Building a distributable
-
-Using [setuptools](https://setuptools.readthedocs.io/en/latest/) with [stdeb](https://github.com/astraw/stdeb).  
-This produces a source package, and then creates a `.deb` package in the `deb_dist` directory. 
-
-First, some build dependencies:
-
-```
-sudo apt install python3-stdeb fakeroot python3-all dh-python lintian devscripts
-```
-
-Then to build:
-
-```
-# Set the version and suite (noble, jammy, etc)
-nano version.sh
-# Update the changelog, carefully
-nano CHANGELOG.md
-# Read the version
-source version.sh
-# Clean everything
-rm -rf deb_dist dist *.tar.gz *.egg* build tmp
-# Create the source and deb
-python3 setup.py --command-packages=stdeb.command sdist_dsc --suite $suite bdist_deb
-# Run a lint against this deb
-lintian deb_dist/grub-reboot-picker_$version-1_all.deb
-# Look at information about this deb
-dpkg -I deb_dist/grub-reboot-picker_$version-1_all.deb
-```
-
-The setup.py is the starting point, which runs setuptools.  Which uses stdeb to run commands to create the .deb.  
-[The `setup.cfg`](https://github.com/astraw/stdeb#stdeb-distutils-command-options) contains arguments to use for the package generation, both for setuputils as well as stdeb for things like Debian control file, changelog, etc.   
-The `MANIFEST.in` includes non-code files which are still needed.  
-I've modified setup.py a bit to generate Debian's changelog from the CHANGELOG.md, it's very sensitive to spacing.    
-
-
-After building, to upload to launchpad, you have to extract the sources, then GPG sign, then use dput to push up.  Then wait for launchpad to build the code, which can take up to an hour. 
-
-```
-cd tmp
-# Extract the source into a subdirectory
-dpkg-source -x ../deb_dist/grub-reboot-picker_$version-1.dsc
-cd grub-reboot-picker-$version/
-# Build a debian package and GPG sign it
-debuild -S -sa
-# Upload to launchpad
-dput ppa:mendhak/ppa ../grub-reboot-picker_$version-1_source.changes
-```
-
-
 ## Application structure
 
 There's a lot happening in a .deb file.  For my own benefit, here are the files it creates, and their purpose. 
@@ -132,8 +71,8 @@ The `com.mendhak.grubrebootpicker.desktop` file goes in two places.
 ### .policy file
 
 The `com.mendhak.grubrebootpicker.policy` is a [polkit policy file](https://wiki.archlinux.org/index.php/Polkit) goes in `/usr/share/polkit-1/actions/`.  
-This in turn allows the application to run `pkexec reboot` without a password prompt.  
+This in turn allows the application to run `efibootmgr` without a password prompt.  
 
 ### The script
 
-As part of the build the `.py` extension is removed.  During install, the executable, extensionless Python script is put in `/usr/sbin` so that it's on the user's $PATH.  
+As part of the build the `.py` extension is removed.  During install, the executable, extensionless Python script is put in `/bin` so that it's on the user's $PATH.  

@@ -1,0 +1,13 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=UEFI Reboot Picker
+GenericName=UEFI Reboot Picker
+Comment=Pick an OS to reboot into
+Exec=pkexec /bin/uefi-reboot-picker
+Terminal=false
+Icon=system-reboot
+Keywords=reboot;uefi;efi;efibootmgr;restart;OS;windows;
+Categories=Utility;System
+StartupNotify=true
+X-Gnome-Autostart-enabled=true

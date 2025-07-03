@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+    <action id="org.freedesktop.policykit.pkexec.efibootmgr">
+        <description>Run efibootmgr</description>
+        <message>Authentication is required to run efibootmgr</message>
+        <icon_name>system-reboot</icon_name>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_inactive>yes</allow_inactive>
+            <allow_active>yes</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">/usr/sbin/efibootmgr</annotate>
+        <annotate key="org.freedesktop.policykit.exec.allow_gui">false</annotate>
+    </action>
+    <action id="org.freedesktop.policykit.pkexec.uefi-reboot-picker">
+        <description>Run uefi-reboot-picker</description>
+        <message>Run uefi-reboot-picker</message>
+        <icon_name>system-reboot</icon_name>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_inactive>yes</allow_inactive>
+            <allow_active>yes</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">/usr/sbin/uefi-reboot-picker</annotate>
+        <annotate key="org.freedesktop.policykit.exec.allow_gui">false</annotate>
+    </action>
+</policyconfig>

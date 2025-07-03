@@ -52,7 +52,7 @@ Clone this repo, then run the python script.
 
 ```
 cd src
-sudo ./grub-reboot-picker.py
+sudo ./uefi-reboot-picker.py
 ```
 
 ## Application structure
@@ -63,16 +63,16 @@ There's a lot happening in a .deb file.  For my own benefit, here are the files 
 
 ### .desktop file
 
-The `com.mendhak.grubrebootpicker.desktop` file goes in two places. 
+The `com.derbrotbaum.uefirebootpicker.desktop` file goes in two places. 
 
 `/etc/xdg/autostart/` -  ensures that the app is launched when the user logs in  
 `/usr/share/applications/` - ensures that the app can be found when searching through Activities. 
 
 ### .policy file
 
-The `com.mendhak.grubrebootpicker.policy` is a [polkit policy file](https://wiki.archlinux.org/index.php/Polkit) goes in `/usr/share/polkit-1/actions/`.  
+The `ccom.derbrotbaum.uefirebootpicker.desktop` is a [polkit policy file](https://wiki.archlinux.org/index.php/Polkit) goes in `/usr/share/polkit-1/actions/`.  
 This in turn allows the application to run `efibootmgr` without a password prompt.  
 
 ### The script
 
-As part of the build the `.py` extension is removed.  During install, the executable, extensionless Python script is put in `/bin` so that it's on the user's $PATH.  
+As part of the build the `.py` extension is removed.  During install, the executable, extensionless Python script is put in `/usr/sbin` so that it's on the user's $PATH.  
